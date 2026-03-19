@@ -1,18 +1,19 @@
 /* ============================================================
-   GESTORI THEME — Colores: Azul #1500c8 | Naranja #ff6000
+   GESTORI THEME — Azul oscuro #0d0096 | Naranja #ff6000
+   Elimina todo el morado (#714B67) de Odoo Community
    ============================================================ */
 
-/* Barra de navegación principal */
+/* ── NAVBAR PRINCIPAL ── */
 .o_main_navbar {
-    background-color: #1500c8 !important;
+    background-color: #0d0096 !important;
     border-bottom: 2px solid #ff6000 !important;
 }
-
-.o_menu_brand { color: #ffffff !important; }
+.o_menu_brand, .o_menu_brand * { color: #ffffff !important; }
 .o_menu_brand:hover { color: #ff6000 !important; }
+.o_nav_entry:hover, .o_nav_entry.active { color: #ff6000 !important; }
 
-/* Botones primarios → naranja */
-.btn-primary {
+/* ── BOTONES PRIMARIOS → NARANJA ── */
+.btn-primary, .btn-primary:visited {
     background-color: #ff6000 !important;
     border-color: #ff6000 !important;
     color: #ffffff !important;
@@ -20,20 +21,83 @@
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     background-color: #cc4d00 !important;
     border-color: #cc4d00 !important;
+    color: #ffffff !important;
 }
 
-/* Links */
-a { color: #1500c8; }
+/* ── ELIMINAR MORADO — reemplazar por azul oscuro ── */
+
+/* Color de texto morado en toda la app */
+.text-primary, .o_form_label, .badge-primary {
+    color: #0d0096 !important;
+}
+
+/* Links morados → azul oscuro */
+a { color: #0d0096; }
 a:hover { color: #ff6000; }
 
-/* Tabs activos */
-.nav-tabs .nav-link.active {
-    color: #1500c8 !important;
-    border-bottom-color: #1500c8 !important;
+/* Texto técnico/módulo morado en Apps */
+.o_app_subtitle, .o_module_technical_name {
+    color: #0d0096 !important;
+}
+
+/* Sidebar de categorías */
+.o_apps_category_name, .o_category_counter {
+    color: #0d0096 !important;
+}
+
+/* Items activos en menú lateral */
+.o_menu_sections .o_nav_entry.active,
+.o_action_manager .active {
+    color: #ff6000 !important;
+    border-left-color: #ff6000 !important;
+}
+
+/* Tabs y nav-pills activos */
+.nav-tabs .nav-link.active,
+.nav-tabs .nav-link:hover {
+    color: #0d0096 !important;
+    border-bottom-color: #0d0096 !important;
+}
+.nav-pills .nav-link.active {
+    background-color: #0d0096 !important;
 }
 
 /* Badges */
-.badge.bg-primary { background-color: #1500c8 !important; }
+.badge.bg-primary, .badge.text-bg-primary {
+    background-color: #0d0096 !important;
+    color: #ffffff !important;
+}
+
+/* Checkboxes y toggles */
+.form-check-input:checked {
+    background-color: #0d0096 !important;
+    border-color: #0d0096 !important;
+}
+
+/* Focus rings */
+.btn:focus, .form-control:focus, .form-select:focus {
+    border-color: #0d0096 !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 0, 150, 0.25) !important;
+}
+
+/* Kanban — columnas y estados */
+.o_kanban_header_title { color: #0d0096 !important; }
+
+/* Lista — filas seleccionadas */
+.o_data_row.o_row_handle:hover,
+.table-active { background-color: rgba(13, 0, 150, 0.08) !important; }
+
+/* Paginación */
+.page-item.active .page-link {
+    background-color: #0d0096 !important;
+    border-color: #0d0096 !important;
+}
+.page-link { color: #0d0096 !important; }
+.page-link:hover { color: #ff6000 !important; }
+
+/* Progress bars */
+.progress-bar { background-color: #0d0096 !important; }
 
 /* Ocultar "Con la tecnología de Odoo" */
 a[href*="odoo.com"] { display: none !important; }
+span[class*="odoo"] { display: none !important; }
