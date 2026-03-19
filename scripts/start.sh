@@ -1,7 +1,6 @@
 #!/bin/bash
 # Script de arranque de Gestori
-# Lee ADMIN_PASSWD desde las variables de entorno de Dokploy
-# y lo pasa a Odoo como argumento seguro.
+# Inyecta ADMIN_PASSWD desde Dokploy en el odoo.conf antes de arrancar.
 
 set -e
 
@@ -10,4 +9,7 @@ if [ -z "$ADMIN_PASSWD" ]; then
     exit 1
 fi
 
-exec odoo --admin-passwd="$ADMIN_PASSWD"
+# Añade admin_passwd al config en tiempo de ejecución (no se guarda en Git)
+echo "admin_passwd = $ADMIN_PASSWD" >> /etc/odoo/odoo.conf
+
+exec odoo
