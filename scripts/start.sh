@@ -9,8 +9,12 @@ if [ -z "$ADMIN_PASSWD" ]; then
     exit 1
 fi
 
-# Copia el config a /tmp (escribible por el usuario odoo) y añade admin_passwd
+# Copia el config a /tmp (escribible por el usuario odoo) e inyecta secretos
 cp /etc/odoo/odoo.conf /tmp/odoo-runtime.conf
 echo "admin_passwd = $ADMIN_PASSWD" >> /tmp/odoo-runtime.conf
+echo "db_host = ${HOST:-db}" >> /tmp/odoo-runtime.conf
+echo "db_port = ${PORT:-5432}" >> /tmp/odoo-runtime.conf
+echo "db_user = ${USER:-odoo}" >> /tmp/odoo-runtime.conf
+echo "db_password = $PASSWORD" >> /tmp/odoo-runtime.conf
 
 exec odoo --config=/tmp/odoo-runtime.conf
