@@ -101,3 +101,20 @@ a:hover { color: #ff6000; }
 /* Ocultar "Con la tecnología de Odoo" */
 a[href*="odoo.com"] { display: none !important; }
 span[class*="odoo"] { display: none !important; }
+.o_login_footer a[href*="odoo.com"],
+.o_login_footer span { display: none !important; }
+footer.o_login_footer { display: none !important; }
+
+/* ── PÁGINA DE LOGIN — colores Gestori ── */
+.o_login_wrap { background-color: #f5f5f5 !important; }
+.o_login_wrap .card, .o_login_wrap .o_login_form {
+    border-top: 4px solid #0d0096 !important;
+}
+.o_login_wrap .btn-primary {
+    background-color: #0d0096 !important;
+    border-color: #0d0096 !important;
+}
+.o_login_wrap .btn-primary:hover {
+    background-color: #ff6000 !important;
+    border-color: #ff6000 !important;
+}
