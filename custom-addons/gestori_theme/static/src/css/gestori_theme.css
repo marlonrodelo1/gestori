@@ -1,0 +1,39 @@
+/* ============================================================
+   GESTORI THEME — Colores: Azul #1500c8 | Naranja #ff6000
+   ============================================================ */
+
+/* Barra de navegación principal */
+.o_main_navbar {
+    background-color: #1500c8 !important;
+    border-bottom: 2px solid #ff6000 !important;
+}
+
+.o_menu_brand { color: #ffffff !important; }
+.o_menu_brand:hover { color: #ff6000 !important; }
+
+/* Botones primarios → naranja */
+.btn-primary {
+    background-color: #ff6000 !important;
+    border-color: #ff6000 !important;
+    color: #ffffff !important;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: #cc4d00 !important;
+    border-color: #cc4d00 !important;
+}
+
+/* Links */
+a { color: #1500c8; }
+a:hover { color: #ff6000; }
+
+/* Tabs activos */
+.nav-tabs .nav-link.active {
+    color: #1500c8 !important;
+    border-bottom-color: #1500c8 !important;
+}
+
+/* Badges */
+.badge.bg-primary { background-color: #1500c8 !important; }
+
+/* Ocultar "Con la tecnología de Odoo" */
+a[href*="odoo.com"] { display: none !important; }

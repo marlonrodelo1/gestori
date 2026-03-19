@@ -11,10 +11,10 @@
     ],
     "assets": {
         "web.assets_web": [
-            ("prepend", "gestori_theme/static/src/scss/gestori_theme.scss"),
+            "gestori_theme/static/src/css/gestori_theme.css",
         ],
         "web.assets_frontend": [
-            ("prepend", "gestori_theme/static/src/scss/gestori_theme.scss"),
+            "gestori_theme/static/src/css/gestori_theme.css",
         ],
     },
     "installable": True,
