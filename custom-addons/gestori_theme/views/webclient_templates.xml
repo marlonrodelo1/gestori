@@ -1,11 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- Página de login: quitar "Con la tecnología de Odoo" -->
-    <template id="gestori_login" inherit_id="web.login" name="Gestori Login Branding">
-        <xpath expr="//a[contains(@href, 'odoo.com')]" position="replace">
-            <span class="text-muted small">Gestori © 2025</span>
-        </xpath>
-    </template>
-
 </odoo>
