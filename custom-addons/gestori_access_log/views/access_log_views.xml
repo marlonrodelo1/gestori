@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Vista lista mejorada del log de accesos -->
+    <record id="view_res_authentication_log_list" model="ir.ui.view">
+        <field name="name">res.authentication.log.list.gestori</field>
+        <field name="model">res.authentication.log</field>
+        <field name="inherit_id" ref="base.res_authentication_log_list_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="decoration-danger">result == 'failure'</attribute>
+                <attribute name="decoration-success">result == 'success'</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Menú en Ajustes > Gestori -->
+    <record id="action_gestori_access_log" model="ir.actions.act_window">
+        <field name="name">Registros de Acceso</field>
+        <field name="res_model">res.authentication.log</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_group_by_result': 0}</field>
+    </record>
+
+    <menuitem
+        id="menu_gestori_root"
+        name="Gestori"
+        sequence="100"
+        web_icon="gestori_access_log,static/description/icon.png"/>
+
+    <menuitem
+        id="menu_gestori_access_log"
+        name="Registros de Acceso"
+        parent="menu_gestori_root"
+        action="action_gestori_access_log"
+        sequence="10"/>
+
+</odoo>

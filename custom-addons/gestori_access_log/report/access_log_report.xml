@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Acción del informe PDF -->
+    <record id="action_report_access_log" model="ir.actions.report">
+        <field name="name">Registro de Accesos</field>
+        <field name="model">res.authentication.log</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">gestori_access_log.report_access_log_template</field>
+        <field name="report_file">gestori_access_log.report_access_log_template</field>
+        <field name="binding_model_id" ref="base.model_res_authentication_log"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Plantilla PDF -->
+    <template id="report_access_log_template">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h2>Registro de Accesos</h2>
+                    <p class="text-muted">
+                        Generado el <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y %H:%M')"/>
+                    </p>
+                    <table class="table table-sm table-bordered mt-4">
+                        <thead style="background-color:#0d0096; color:white;">
+                            <tr>
+                                <th>Fecha y Hora</th>
+                                <th>Login de Acceso</th>
+                                <th>Email</th>
+                                <th>Dirección IP</th>
+                                <th>Resultado</th>
+                                <th>Nombre del Usuario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="docs" t-as="log">
+                                <tr>
+                                    <td><t t-esc="log.create_date.strftime('%d/%m/%Y %H:%M:%S') if log.create_date else ''"/></td>
+                                    <td><t t-esc="log.login or ''"/></td>
+                                    <td><t t-esc="log.partner_id.email if log.partner_id else ''"/></td>
+                                    <td><t t-esc="log.ip or ''"/></td>
+                                    <td>
+                                        <t t-if="log.result == 'success'">Exitoso</t>
+                                        <t t-else="">Fallido</t>
+                                    </td>
+                                    <td><t t-esc="log.partner_id.name if log.partner_id else ''"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>
