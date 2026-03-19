@@ -1,3 +1,6 @@
+# Módulos estándar de Odoo — ya vienen en la imagen odoo:18, no deben estar en git
+addons/
+
 # sphinx build directories
 _build/
 

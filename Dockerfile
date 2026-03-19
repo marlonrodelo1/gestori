@@ -4,6 +4,9 @@ FROM odoo:18
 # (list_db=False, dbfilter, log_level, etc.)
 COPY config/odoo.conf /etc/odoo/odoo.conf
 
+# Copia los addons personalizados de Gestori
+COPY custom-addons/ /mnt/extra-addons/
+
 # Copia el script de arranque que lee ADMIN_PASSWD desde Dokploy
 COPY --chmod=755 scripts/start.sh /usr/local/bin/start.sh
 
