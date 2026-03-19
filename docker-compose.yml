@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-postgres}
       POSTGRES_USER: ${USER:-odoo}
-      POSTGRES_PASSWORD: ${PASSWORD:-odoo}
+      POSTGRES_PASSWORD: ${PASSWORD:?La variable PASSWORD no está definida en .env}
     volumes:
       # Persist PostgreSQL data between restarts.
       - postgres_data:/var/lib/postgresql/data
@@ -31,14 +31,21 @@ services:
       # Odoo official image uses these variables to connect to PostgreSQL.
       HOST: ${HOST:-db}
       USER: ${USER:-odoo}
-      PASSWORD: ${PASSWORD:-odoo}
+      PASSWORD: ${PASSWORD:?La variable PASSWORD no está definida en .env}
+      # Master password: protects database manager
+      ADMIN_PASSWD: ${ADMIN_PASSWD:?La variable ADMIN_PASSWD no está definida en .env}
     volumes:
-      # Mount local custom addons into Odoo custom addons path.
+      # Custom addons
       - ./custom-addons:/mnt/extra-addons
+      # Persistent filestore: uploaded files survive redeployments
+      - odoo_filestore:/var/lib/odoo
+      # Odoo configuration (list_db, dbfilter, workers, etc.)
+      - ./config:/mnt/gestori-config
     command:
       - odoo
-      - --addons-path=/usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons
-      - --db-filter=^%d$
+      - --config=/mnt/gestori-config/odoo.conf
+      - --admin-passwd=${ADMIN_PASSWD}
 
 volumes:
   postgres_data:
+  odoo_filestore:
