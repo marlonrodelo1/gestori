@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: odoo18_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      POSTGRES_USER: ${USER:-odoo}
+      POSTGRES_PASSWORD: ${PASSWORD:-odoo}
+    volumes:
+      # Persist PostgreSQL data between restarts.
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${USER:-odoo} -d ${POSTGRES_DB:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  odoo:
+    image: odoo:18
+    container_name: odoo18_app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8069:8069"
+    environment:
+      # Odoo official image uses these variables to connect to PostgreSQL.
+      HOST: ${HOST:-db}
+      USER: ${USER:-odoo}
+      PASSWORD: ${PASSWORD:-odoo}
+    volumes:
+      # Mount local custom addons into Odoo custom addons path.
+      - ./custom-addons:/mnt/extra-addons
+    command:
+      - odoo
+      - --addons-path=/usr/lib/python3/dist-packages/odoo/addons,/mnt/extra-addons
+      - --db-filter=^%d$
+
+volumes:
+  postgres_data:
