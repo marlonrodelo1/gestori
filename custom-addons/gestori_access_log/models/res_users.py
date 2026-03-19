@@ -5,37 +5,30 @@ from odoo.http import request
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    @classmethod
-    def _login(cls, db, login, password, user_agent_env):
-        uid = super()._login(db, login, password, user_agent_env)
-        result = 'success' if uid else 'failure'
-        ip = None
-        if request:
-            ip = request.httprequest.environ.get('HTTP_X_FORWARDED_FOR') or \
-                 request.httprequest.environ.get('REMOTE_ADDR')
+    def _check_credentials(self, password, env):
         try:
-            env = cls.browse(cls._origin.env if hasattr(cls, '_origin') else None)
+            result = super()._check_credentials(password, env)
+            self._gestori_log_access('success')
+            return result
         except Exception:
-            env = None
-        # Log usando cursor directo para no fallar si el ORM no está disponible
+            self._gestori_log_access('failure')
+            raise
+
+    def _gestori_log_access(self, result):
         try:
-            from odoo.api import Environment
-            from odoo.modules.registry import Registry
-            import odoo
-            registry = Registry(db)
-            with registry.cursor() as cr:
-                env2 = Environment(cr, odoo.SUPERUSER_ID, {})
-                partner_id = False
-                if uid:
-                    user = env2['res.users'].browse(uid)
-                    partner_id = user.partner_id.id
-                env2['gestori.access.log'].create({
-                    'login': login,
-                    'partner_id': partner_id,
-                    'ip': ip,
-                    'result': result,
-                })
-                cr.commit()
+            ip = None
+            if request:
+                ip = (
+                    request.httprequest.environ.get('HTTP_X_FORWARDED_FOR', '').split(',')[0].strip()
+                    or request.httprequest.environ.get('REMOTE_ADDR')
+                )
+            partner_id = self.partner_id.id if self.ids else False
+            login = self.login if self.ids else ''
+            self.env['gestori.access.log'].sudo().create({
+                'login': login,
+                'partner_id': partner_id,
+                'ip': ip,
+                'result': result,
+            })
         except Exception:
             pass
-        return uid
