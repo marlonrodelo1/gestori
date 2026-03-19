@@ -5,8 +5,7 @@ FROM odoo:18
 COPY config/odoo.conf /etc/odoo/odoo.conf
 
 # Copia el script de arranque que lee ADMIN_PASSWD desde Dokploy
-COPY scripts/start.sh /start.sh
-RUN chmod +x /start.sh
+COPY --chmod=755 scripts/start.sh /usr/local/bin/start.sh
 
 # Arranca Odoo con la contraseña maestra desde variable de entorno
-CMD ["/start.sh"]
+CMD ["/usr/local/bin/start.sh"]
