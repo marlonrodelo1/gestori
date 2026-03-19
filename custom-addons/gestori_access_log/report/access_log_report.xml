@@ -4,10 +4,12 @@
     <!-- Acción del informe PDF -->
     <record id="action_report_access_log" model="ir.actions.report">
         <field name="name">Registro de Accesos</field>
-        <field name="model">res.authentication.log</field>
+        <field name="model">gestori.access.log</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">gestori_access_log.report_access_log_template</field>
         <field name="report_file">gestori_access_log.report_access_log_template</field>
+        <field name="binding_model_id" ref="model_gestori_access_log"/>
+        <field name="binding_type">report</field>
     </record>
 
     <!-- Plantilla PDF -->
@@ -23,11 +25,10 @@
                         <thead style="background-color:#0d0096; color:white;">
                             <tr>
                                 <th>Fecha y Hora</th>
-                                <th>Login de Acceso</th>
-                                <th>Email</th>
+                                <th>Login</th>
                                 <th>Dirección IP</th>
                                 <th>Resultado</th>
-                                <th>Nombre del Usuario</th>
+                                <th>Usuario</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -35,7 +36,6 @@
                                 <tr>
                                     <td><t t-esc="log.create_date.strftime('%d/%m/%Y %H:%M:%S') if log.create_date else ''"/></td>
                                     <td><t t-esc="log.login or ''"/></td>
-                                    <td><t t-esc="log.partner_id.email if log.partner_id else ''"/></td>
                                     <td><t t-esc="log.ip or ''"/></td>
                                     <td>
                                         <t t-if="log.result == 'success'">Exitoso</t>
