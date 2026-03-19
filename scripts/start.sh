@@ -9,7 +9,8 @@ if [ -z "$ADMIN_PASSWD" ]; then
     exit 1
 fi
 
-# Añade admin_passwd al config en tiempo de ejecución (no se guarda en Git)
-echo "admin_passwd = $ADMIN_PASSWD" >> /etc/odoo/odoo.conf
+# Copia el config a /tmp (escribible por el usuario odoo) y añade admin_passwd
+cp /etc/odoo/odoo.conf /tmp/odoo-runtime.conf
+echo "admin_passwd = $ADMIN_PASSWD" >> /tmp/odoo-runtime.conf
 
-exec odoo
+exec odoo --config=/tmp/odoo-runtime.conf
