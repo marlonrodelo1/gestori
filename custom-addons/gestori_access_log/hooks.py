@@ -52,7 +52,6 @@ LOGINS_INVALIDOS = [
     'user',
     'admin@admin.com',
     'hacker@spam.ru',
-    'info@empresa.es',   # login válido pero desde IP sospechosa
 ]
 
 
@@ -95,66 +94,61 @@ def _generate_demo_logs(env):
 
     records = []
 
-    # --- Accesos normales de oficina (60%) ---
-    for _ in range(270):
+    # Franjas horarias de entrada al sistema (lunes-viernes)
+    FRANJAS = [
+        (8, 9),    # Entrada mañana
+        (13, 14),  # Después de comer
+        (16, 18),  # Final de tarde
+    ]
+
+    # --- Accesos de lunes a viernes: 2-3 logins por día ---
+    current_day = three_months_ago.date()
+    end_day = now.date()
+
+    while current_day <= end_day:
+        # Solo días laborables (0=lunes, 4=viernes)
+        if current_day.weekday() <= 4:
+            accesos_hoy = random.randint(2, 3)
+            franjas_hoy = random.sample(FRANJAS, min(accesos_hoy, len(FRANJAS)))
+
+            for franja_inicio, franja_fin in franjas_hoy:
+                hour = random.randint(franja_inicio, franja_fin - 1)
+                minute = random.randint(0, 59)
+                second = random.randint(0, 59)
+                log_date = datetime.combine(current_day, __import__('datetime').time(hour, minute, second))
+
+                if log_date > now:
+                    current_day += timedelta(days=1)
+                    continue
+
+                login, partner_id = random.choice(user_data)
+                # 90% desde oficina, 10% remoto
+                ip = random.choice(IPS_OFICINA + IPS_MOVIL if random.random() < 0.9 else IPS_REMOTO)
+                result = 'success' if random.random() < 0.92 else 'failure'
+
+                records.append({
+                    'login': login,
+                    'partner_id': partner_id if result == 'success' else False,
+                    'ip': ip,
+                    'result': result,
+                    'create_date': log_date,
+                })
+
+        current_day += timedelta(days=1)
+
+    # --- Intentos maliciosos aleatorios (bots, no respetan horario) ---
+    for _ in range(40):
         days_back = random.randint(0, 90)
-        hour = random.randint(8, 19)
-        minute = random.randint(0, 59)
-        log_date = three_months_ago + timedelta(days=days_back, hours=hour - 8, minutes=minute)
-        if log_date > now:
-            log_date = now - timedelta(minutes=random.randint(5, 120))
-
-        login, partner_id = random.choice(user_data)
-        ip = random.choice(IPS_OFICINA + IPS_MOVIL)
-        result = 'success' if random.random() < 0.92 else 'failure'
-
-        records.append({
-            'login': login,
-            'partner_id': partner_id if result == 'success' else False,
-            'ip': ip,
-            'result': result,
-            'create_date': log_date,
-        })
-
-    # --- Accesos remotos (20%) ---
-    for _ in range(90):
-        days_back = random.randint(0, 90)
-        hour = random.randint(7, 23)
-        minute = random.randint(0, 59)
-        log_date = three_months_ago + timedelta(days=days_back, hours=hour - 7, minutes=minute)
-        if log_date > now:
-            log_date = now - timedelta(minutes=random.randint(5, 60))
-
-        login, partner_id = random.choice(user_data)
-        ip = random.choice(IPS_REMOTO)
-        result = 'success' if random.random() < 0.80 else 'failure'
-
-        records.append({
-            'login': login,
-            'partner_id': partner_id if result == 'success' else False,
-            'ip': ip,
-            'result': result,
-            'create_date': log_date,
-        })
-
-    # --- Intentos maliciosos (20%) - siempre fallan ---
-    for _ in range(90):
-        days_back = random.randint(0, 90)
-        # Los bots atacan a cualquier hora
         hour = random.randint(0, 23)
         minute = random.randint(0, 59)
-        second = random.randint(0, 59)
-        log_date = three_months_ago + timedelta(days=days_back, hours=hour, minutes=minute, seconds=second)
+        log_date = three_months_ago + timedelta(days=days_back, hours=hour, minutes=minute)
         if log_date > now:
-            log_date = now - timedelta(seconds=random.randint(60, 3600))
-
-        login = random.choice(LOGINS_INVALIDOS)
-        ip = random.choice(IPS_SOSPECHOSAS)
+            log_date = now - timedelta(minutes=random.randint(10, 120))
 
         records.append({
-            'login': login,
+            'login': random.choice(LOGINS_INVALIDOS),
             'partner_id': False,
-            'ip': ip,
+            'ip': random.choice(IPS_SOSPECHOSAS),
             'result': 'failure',
             'create_date': log_date,
         })
