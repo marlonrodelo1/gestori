@@ -61,11 +61,12 @@ def _generate_demo_logs(env):
     now = datetime.now()
     three_months_ago = now - timedelta(days=90)
 
-    # Usar los usuarios reales de la BD
-    users = env['res.users'].search([
-        ('active', '=', True),
-        ('share', '=', False),
-    ], limit=10)
+    # Usar solo usuarios de la compañía principal de esta BD
+    main_company = env.ref('base.main_company', raise_if_not_found=False)
+    domain = [('active', '=', True), ('share', '=', False)]
+    if main_company:
+        domain.append(('company_id', '=', main_company.id))
+    users = env['res.users'].search(domain, limit=10)
     user_data = [(u.login, u.partner_id.id) for u in users if u.partner_id and u.login]
     if not user_data:
         user_data = [('admin', False)]
