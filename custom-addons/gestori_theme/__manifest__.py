@@ -6,7 +6,9 @@
     "author": "Gestori",
     "license": "LGPL-3",
     "depends": ["web"],
-    "data": [],
+    "data": [
+        "views/webclient_templates.xml",
+    ],
     "assets": {
         "web.assets_web": [
             "gestori_theme/static/src/css/gestori_theme.css",
