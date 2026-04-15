@@ -154,7 +154,7 @@ def _generate_demo_logs(env):
         })
 
     # Ordenar cronológicamente
-    records.sort(key=lambda r: r['create_date'])
+    records.sort(key=lambda r: r['date'])
 
     for rec in records:
         env['gestori.access.log'].sudo().create(rec)
