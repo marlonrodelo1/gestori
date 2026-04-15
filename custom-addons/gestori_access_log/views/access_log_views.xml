@@ -156,13 +156,8 @@
         action="action_gestori_access_log"
         sequence="10"/>
 
-    <!-- Submenú Datos de prueba (solo admin) -->
-    <menuitem
-        id="menu_gestori_demo"
-        name="Generar Datos de Prueba"
-        parent="menu_gestori_root"
-        action="action_generate_demo_wizard"
-        sequence="90"
-        groups="base.group_system"/>
+    <!-- Submenú Datos de prueba: oculto del menú, accesible por URL para admins -->
+    <!-- menuitem desactivado intencionalmente -->
+
 
 </odoo>

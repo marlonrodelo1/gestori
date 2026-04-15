@@ -61,26 +61,29 @@ def _generate_demo_logs(env):
     now = datetime.now()
     three_months_ago = now - timedelta(days=90)
 
-    users = env['res.users'].search([('active', '=', True)], limit=8)
-    partner_map = {u.login: u.partner_id.id for u in users if u.partner_id}
-    partner_ids = list(partner_map.values())
+    # Usar los usuarios reales de la BD
+    users = env['res.users'].search([
+        ('active', '=', True),
+        ('share', '=', False),
+    ], limit=10)
+    user_data = [(u.login, u.partner_id.id) for u in users if u.partner_id and u.login]
+    if not user_data:
+        user_data = [('admin', False)]
 
     records = []
 
     # --- Accesos normales de oficina (60%) ---
     for _ in range(270):
         days_back = random.randint(0, 90)
-        # Horario laboral 8-19h, lunes-viernes simulado
         hour = random.randint(8, 19)
         minute = random.randint(0, 59)
         log_date = three_months_ago + timedelta(days=days_back, hours=hour - 8, minutes=minute)
         if log_date > now:
             log_date = now - timedelta(minutes=random.randint(5, 120))
 
-        login = random.choice(LOGINS_VALIDOS)
+        login, partner_id = random.choice(user_data)
         ip = random.choice(IPS_OFICINA + IPS_MOVIL)
         result = 'success' if random.random() < 0.92 else 'failure'
-        partner_id = partner_ids[0] if partner_ids else False
 
         records.append({
             'login': login,
@@ -99,14 +102,13 @@ def _generate_demo_logs(env):
         if log_date > now:
             log_date = now - timedelta(minutes=random.randint(5, 60))
 
-        login = random.choice(LOGINS_VALIDOS[:3])
+        login, partner_id = random.choice(user_data)
         ip = random.choice(IPS_REMOTO)
         result = 'success' if random.random() < 0.80 else 'failure'
-        partner_id = partner_ids[0] if partner_ids and result == 'success' else False
 
         records.append({
             'login': login,
-            'partner_id': partner_id,
+            'partner_id': partner_id if result == 'success' else False,
             'ip': ip,
             'result': result,
             'create_date': log_date,
