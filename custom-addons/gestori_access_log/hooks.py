@@ -61,15 +61,37 @@ def _generate_demo_logs(env):
     now = datetime.now()
     three_months_ago = now - timedelta(days=90)
 
-    # Usar solo usuarios de la compañía principal de esta BD
+    # Usar solo usuarios cuyo email pertenece al dominio de la compañía principal
     main_company = env.ref('base.main_company', raise_if_not_found=False)
-    domain = [('active', '=', True), ('share', '=', False)]
+    company_domain = ''
     if main_company:
-        domain.append(('company_id', '=', main_company.id))
-    users = env['res.users'].search(domain, limit=10)
+        if main_company.email and '@' in main_company.email:
+            company_domain = main_company.email.split('@')[1]
+        elif main_company.website:
+            company_domain = (
+                main_company.website
+                .replace('https://', '').replace('http://', '')
+                .replace('www.', '').strip('/')
+            )
+
+    if company_domain:
+        users = env['res.users'].search([
+            ('active', '=', True),
+            ('share', '=', False),
+            ('login', 'like', '@' + company_domain),
+        ], limit=10)
+    else:
+        users = env['res.users'].search([
+            ('active', '=', True),
+            ('share', '=', False),
+            ('company_id', '=', main_company.id if main_company else False),
+        ], limit=10)
+
     user_data = [(u.login, u.partner_id.id) for u in users if u.partner_id and u.login]
     if not user_data:
-        user_data = [('admin', False)]
+        # Fallback: cualquier usuario interno
+        fallback = env['res.users'].search([('active', '=', True), ('share', '=', False)], limit=1)
+        user_data = [(fallback[0].login, fallback[0].partner_id.id)] if fallback else [('admin', False)]
 
     records = []
 
