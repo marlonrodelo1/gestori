@@ -64,7 +64,7 @@
                             <t t-foreach="docs" t-as="log">
                                 <tr t-attf-class="{{ 'success-row' if log.result == 'success' else 'failure-row' }}">
                                     <td><t t-esc="log_index + 1"/></td>
-                                    <td><t t-esc="log.create_date.strftime('%d/%m/%Y %H:%M:%S') if log.create_date else ''"/></td>
+                                    <td><t t-esc="log.date.strftime('%d/%m/%Y %H:%M:%S') if log.date else ''"/></td>
                                     <td><t t-esc="log.login or ''"/></td>
                                     <td><t t-esc="log.ip or ''"/></td>
                                     <td>

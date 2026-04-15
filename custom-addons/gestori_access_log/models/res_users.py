@@ -24,11 +24,13 @@ class ResUsers(models.Model):
                 )
             partner_id = self.partner_id.id if self.ids else False
             login = self.login if self.ids else ''
+            from datetime import datetime
             self.env['gestori.access.log'].sudo().create({
                 'login': login,
                 'partner_id': partner_id,
                 'ip': ip,
                 'result': result,
+                'date': datetime.now(),
             })
         except Exception:
             pass

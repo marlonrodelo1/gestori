@@ -1,5 +1,5 @@
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time as dtime, date as ddate
 
 
 # IPs realistas: oficina, móviles, remotos, intentos maliciosos
@@ -115,7 +115,7 @@ def _generate_demo_logs(env):
                 hour = random.randint(franja_inicio, franja_fin - 1)
                 minute = random.randint(0, 59)
                 second = random.randint(0, 59)
-                log_date = datetime.combine(current_day, __import__('datetime').time(hour, minute, second))
+                log_date = datetime.combine(current_day, dtime(hour, minute, second))
 
                 if log_date > now:
                     current_day += timedelta(days=1)
@@ -131,7 +131,7 @@ def _generate_demo_logs(env):
                     'partner_id': partner_id if result == 'success' else False,
                     'ip': ip,
                     'result': result,
-                    'create_date': log_date,
+                    'date': log_date,
                 })
 
         current_day += timedelta(days=1)
@@ -150,7 +150,7 @@ def _generate_demo_logs(env):
             'partner_id': False,
             'ip': random.choice(IPS_SOSPECHOSAS),
             'result': 'failure',
-            'create_date': log_date,
+            'date': log_date,
         })
 
     # Ordenar cronológicamente

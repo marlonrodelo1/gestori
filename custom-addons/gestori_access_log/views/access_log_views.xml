@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <list decoration-danger="result == 'failure'" decoration-success="result == 'success'"
                   export_xlsx="1">
-                <field name="create_date" string="Fecha y Hora"/>
+                <field name="date" string="Fecha y Hora"/>
                 <field name="login" string="Login"/>
                 <field name="partner_id" string="Usuario"/>
                 <field name="ip" string="Dirección IP"/>
@@ -36,13 +36,13 @@
                         domain="[('result','=','failure')]"/>
                 <separator/>
                 <filter name="filter_today" string="Hoy"
-                        domain="[('create_date','&gt;=', datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                        domain="[('date','&gt;=', datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).strftime('%Y-%m-%d %H:%M:%S'))]"/>
                 <filter name="filter_week" string="Esta semana"
-                        domain="[('create_date','&gt;=', (datetime.date.today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                        domain="[('date','&gt;=', (datetime.date.today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
                 <filter name="filter_month" string="Este mes"
-                        domain="[('create_date','&gt;=', datetime.date.today().strftime('%Y-%m-01'))]"/>
+                        domain="[('date','&gt;=', datetime.date.today().strftime('%Y-%m-01'))]"/>
                 <filter name="filter_3months" string="Últimos 3 meses"
-                        domain="[('create_date','&gt;=', (datetime.date.today() - datetime.timedelta(days=90)).strftime('%Y-%m-%d'))]"/>
+                        domain="[('date','&gt;=', (datetime.date.today() - datetime.timedelta(days=90)).strftime('%Y-%m-%d'))]"/>
 
                 <!-- Agrupar por -->
                 <group expand="0" string="Agrupar por">
@@ -53,11 +53,11 @@
                     <filter name="group_ip" string="Dirección IP"
                             context="{'group_by': 'ip'}"/>
                     <filter name="group_date" string="Fecha"
-                            context="{'group_by': 'create_date:day'}"/>
+                            context="{'group_by': 'date:day'}"/>
                     <filter name="group_week" string="Semana"
-                            context="{'group_by': 'create_date:week'}"/>
+                            context="{'group_by': 'date:week'}"/>
                     <filter name="group_month" string="Mes"
-                            context="{'group_by': 'create_date:month'}"/>
+                            context="{'group_by': 'date:month'}"/>
                 </group>
             </search>
         </field>
@@ -69,7 +69,7 @@
         <field name="model">gestori.access.log</field>
         <field name="arch" type="xml">
             <graph string="Accesos por resultado" type="bar">
-                <field name="create_date" interval="day" type="col"/>
+                <field name="date" interval="day" type="col"/>
                 <field name="result" type="row"/>
             </graph>
         </field>
@@ -81,7 +81,7 @@
         <field name="model">gestori.access.log</field>
         <field name="arch" type="xml">
             <pivot string="Análisis de Accesos" display_quantity="1">
-                <field name="create_date" interval="month" type="row"/>
+                <field name="date" interval="month" type="row"/>
                 <field name="result" type="col"/>
             </pivot>
         </field>
