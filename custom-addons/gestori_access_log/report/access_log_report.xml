@@ -10,6 +10,7 @@
         <field name="report_file">gestori_access_log.report_access_log_template</field>
         <field name="binding_model_id" ref="model_gestori_access_log"/>
         <field name="binding_type">report</field>
+        <field name="print_report_name">'Registros_Acceso_%s' % (datetime.datetime.now().strftime('%Y%m%d_%H%M'))</field>
     </record>
 
     <!-- Plantilla PDF -->
@@ -17,13 +18,41 @@
         <t t-call="web.html_container">
             <t t-call="web.external_layout">
                 <div class="page">
-                    <h2>Registro de Accesos</h2>
-                    <p class="text-muted">
-                        Generado el <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y %H:%M')"/>
-                    </p>
-                    <table class="table table-sm table-bordered mt-4">
-                        <thead style="background-color:#0d0096; color:white;">
+                    <style>
+                        .header-gestori { background-color: #0d0096; color: white; padding: 10px 15px; border-radius: 4px; margin-bottom: 15px; }
+                        .stat-box { display: inline-block; padding: 8px 20px; margin: 5px; border-radius: 4px; font-size: 14px; }
+                        .stat-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+                        .stat-danger  { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+                        .stat-total   { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+                        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+                        th { background-color: #0d0096; color: white; padding: 6px 8px; text-align: left; }
+                        td { padding: 5px 8px; border-bottom: 1px solid #dee2e6; }
+                        tr.success-row { background-color: #f0fff0; }
+                        tr.failure-row { background-color: #fff0f0; }
+                        .badge-success { background-color: #28a745; color: white; padding: 2px 8px; border-radius: 10px; }
+                        .badge-failure { background-color: #dc3545; color: white; padding: 2px 8px; border-radius: 10px; }
+                    </style>
+
+                    <div class="header-gestori">
+                        <h2 style="margin:0;">Registro de Accesos al Sistema</h2>
+                        <small>Generado el <t t-esc="datetime.datetime.now().strftime('%d/%m/%Y a las %H:%M:%S')"/></small>
+                    </div>
+
+                    <!-- Estadísticas resumen -->
+                    <t t-set="total" t-value="len(docs)"/>
+                    <t t-set="exitosos" t-value="len([d for d in docs if d.result == 'success'])"/>
+                    <t t-set="fallidos" t-value="len([d for d in docs if d.result == 'failure'])"/>
+
+                    <div style="margin-bottom: 15px;">
+                        <span class="stat-box stat-total">Total: <strong><t t-esc="total"/></strong></span>
+                        <span class="stat-box stat-success">Exitosos: <strong><t t-esc="exitosos"/></strong></span>
+                        <span class="stat-box stat-danger">Fallidos: <strong><t t-esc="fallidos"/></strong></span>
+                    </div>
+
+                    <table>
+                        <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Fecha y Hora</th>
                                 <th>Login</th>
                                 <th>Dirección IP</th>
@@ -33,15 +62,20 @@
                         </thead>
                         <tbody>
                             <t t-foreach="docs" t-as="log">
-                                <tr>
+                                <tr t-attf-class="{{ 'success-row' if log.result == 'success' else 'failure-row' }}">
+                                    <td><t t-esc="log_index + 1"/></td>
                                     <td><t t-esc="log.create_date.strftime('%d/%m/%Y %H:%M:%S') if log.create_date else ''"/></td>
                                     <td><t t-esc="log.login or ''"/></td>
                                     <td><t t-esc="log.ip or ''"/></td>
                                     <td>
-                                        <t t-if="log.result == 'success'">Exitoso</t>
-                                        <t t-else="">Fallido</t>
+                                        <t t-if="log.result == 'success'">
+                                            <span class="badge-success">Exitoso</span>
+                                        </t>
+                                        <t t-else="">
+                                            <span class="badge-failure">Fallido</span>
+                                        </t>
                                     </td>
-                                    <td><t t-esc="log.partner_id.name if log.partner_id else ''"/></td>
+                                    <td><t t-esc="log.partner_id.name if log.partner_id else '-'"/></td>
                                 </tr>
                             </t>
                         </tbody>

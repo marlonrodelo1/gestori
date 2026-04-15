@@ -1,7 +1,7 @@
 {
     "name": "Gestori - Registro de Accesos",
-    "summary": "Log de accesos con IP y exportación a PDF",
-    "version": "18.0.1.0.0",
+    "summary": "Log de accesos con IP, filtros, gráficos y exportación PDF/Excel",
+    "version": "18.0.2.0.0",
     "category": "Tools",
     "author": "Gestori",
     "license": "LGPL-3",
@@ -14,4 +14,5 @@
     "installable": True,
     "application": False,
     "auto_install": False,
+    "post_init_hook": "post_init_hook",
 }

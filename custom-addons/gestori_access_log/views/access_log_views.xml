@@ -6,22 +6,139 @@
         <field name="name">gestori.access.log.list</field>
         <field name="model">gestori.access.log</field>
         <field name="arch" type="xml">
-            <list decoration-danger="result == 'failure'" decoration-success="result == 'success'">
+            <list decoration-danger="result == 'failure'" decoration-success="result == 'success'"
+                  export_xlsx="1">
                 <field name="create_date" string="Fecha y Hora"/>
                 <field name="login" string="Login"/>
                 <field name="partner_id" string="Usuario"/>
                 <field name="ip" string="Dirección IP"/>
-                <field name="result" string="Resultado"/>
+                <field name="result" string="Resultado" widget="badge"
+                       decoration-success="result == 'success'"
+                       decoration-danger="result == 'failure'"/>
             </list>
         </field>
     </record>
 
-    <!-- Acción -->
+    <!-- Vista búsqueda -->
+    <record id="view_gestori_access_log_search" model="ir.ui.view">
+        <field name="name">gestori.access.log.search</field>
+        <field name="model">gestori.access.log</field>
+        <field name="arch" type="xml">
+            <search string="Buscar Registros de Acceso">
+                <field name="login" string="Login"/>
+                <field name="ip" string="Dirección IP"/>
+                <field name="partner_id" string="Usuario"/>
+
+                <!-- Filtros rápidos -->
+                <filter name="filter_success" string="Exitosos"
+                        domain="[('result','=','success')]"/>
+                <filter name="filter_failure" string="Fallidos"
+                        domain="[('result','=','failure')]"/>
+                <separator/>
+                <filter name="filter_today" string="Hoy"
+                        domain="[('create_date','&gt;=', datetime.datetime.combine(datetime.date.today(), datetime.time(0,0,0)).strftime('%Y-%m-%d %H:%M:%S'))]"/>
+                <filter name="filter_week" string="Esta semana"
+                        domain="[('create_date','&gt;=', (datetime.date.today() - datetime.timedelta(days=7)).strftime('%Y-%m-%d'))]"/>
+                <filter name="filter_month" string="Este mes"
+                        domain="[('create_date','&gt;=', datetime.date.today().strftime('%Y-%m-01'))]"/>
+                <filter name="filter_3months" string="Últimos 3 meses"
+                        domain="[('create_date','&gt;=', (datetime.date.today() - datetime.timedelta(days=90)).strftime('%Y-%m-%d'))]"/>
+
+                <!-- Agrupar por -->
+                <group expand="0" string="Agrupar por">
+                    <filter name="group_result" string="Resultado"
+                            context="{'group_by': 'result'}"/>
+                    <filter name="group_login" string="Login"
+                            context="{'group_by': 'login'}"/>
+                    <filter name="group_ip" string="Dirección IP"
+                            context="{'group_by': 'ip'}"/>
+                    <filter name="group_date" string="Fecha"
+                            context="{'group_by': 'create_date:day'}"/>
+                    <filter name="group_week" string="Semana"
+                            context="{'group_by': 'create_date:week'}"/>
+                    <filter name="group_month" string="Mes"
+                            context="{'group_by': 'create_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Vista gráfico -->
+    <record id="view_gestori_access_log_graph" model="ir.ui.view">
+        <field name="name">gestori.access.log.graph</field>
+        <field name="model">gestori.access.log</field>
+        <field name="arch" type="xml">
+            <graph string="Accesos por resultado" type="bar">
+                <field name="create_date" interval="day" type="col"/>
+                <field name="result" type="row"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Vista pivot -->
+    <record id="view_gestori_access_log_pivot" model="ir.ui.view">
+        <field name="name">gestori.access.log.pivot</field>
+        <field name="model">gestori.access.log</field>
+        <field name="arch" type="xml">
+            <pivot string="Análisis de Accesos" display_quantity="1">
+                <field name="create_date" interval="month" type="row"/>
+                <field name="result" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Acción principal -->
     <record id="action_gestori_access_log" model="ir.actions.act_window">
         <field name="name">Registros de Acceso</field>
         <field name="res_model">gestori.access.log</field>
-        <field name="view_mode">list</field>
-        <field name="view_id" ref="view_gestori_access_log_list"/>
+        <field name="view_mode">list,graph,pivot</field>
+        <field name="search_view_id" ref="view_gestori_access_log_search"/>
+        <field name="context">{'search_default_filter_3months': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No hay registros de acceso todavía.
+            </p>
+            <p>Los accesos se registran automáticamente al iniciar sesión.</p>
+        </field>
+    </record>
+
+    <!-- Wizard: generar datos de prueba -->
+    <record id="view_generate_demo_wizard" model="ir.ui.view">
+        <field name="name">gestori.access.log.demo.wizard.form</field>
+        <field name="model">gestori.access.log.demo.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generar Datos de Prueba">
+                <sheet>
+                    <group>
+                        <group string="Configuración">
+                            <field name="records_count"/>
+                            <field name="months_back"/>
+                        </group>
+                        <group string="Confirmación">
+                            <field name="confirm" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <div class="alert alert-warning" role="alert">
+                        Esta acción generará registros de acceso ficticios para pruebas.
+                        Solo se generan si no existen registros previos (salvo que uses "Limpiar todo").
+                    </div>
+                </sheet>
+                <footer>
+                    <button name="action_generate" type="object"
+                            string="Generar datos" class="btn-primary"/>
+                    <button name="action_clear_all" type="object"
+                            string="Limpiar todo" class="btn-danger"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_generate_demo_wizard" model="ir.actions.act_window">
+        <field name="name">Generar Datos de Prueba</field>
+        <field name="res_model">gestori.access.log.demo.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
     </record>
 
     <!-- Menú raíz Gestori -->
@@ -38,5 +155,14 @@
         parent="menu_gestori_root"
         action="action_gestori_access_log"
         sequence="10"/>
+
+    <!-- Submenú Datos de prueba (solo admin) -->
+    <menuitem
+        id="menu_gestori_demo"
+        name="Generar Datos de Prueba"
+        parent="menu_gestori_root"
+        action="action_generate_demo_wizard"
+        sequence="90"
+        groups="base.group_system"/>
 
 </odoo>
