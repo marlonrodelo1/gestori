@@ -8,7 +8,7 @@
     <template id="gestori_login_layout" inherit_id="web.login_layout" name="Gestori Login Layout">
 
         <!-- ── 1. Inyectar CSS inline antes del contenedor ── -->
-        <xpath expr="//div[contains(@class,'container')]" position="before">
+        <xpath expr="//div[hasclass('container')]" position="before">
             <style>
                 /* ============================================================
                    GESTORI — Login Page · Inline Styles
