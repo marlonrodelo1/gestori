@@ -56,7 +56,7 @@ LOGINS_INVALIDOS = [
 
 
 def _generate_demo_logs(env):
-    """Genera ~450 registros de acceso de los últimos 3 meses."""
+    """Genera registros de acceso de los últimos 3 meses con 2-3 IPs únicas."""
     now = datetime.now()
     three_months_ago = now - timedelta(days=90)
 
@@ -88,9 +88,12 @@ def _generate_demo_logs(env):
 
     user_data = [(u.login, u.partner_id.id) for u in users if u.partner_id and u.login]
     if not user_data:
-        # Fallback: cualquier usuario interno
         fallback = env['res.users'].search([('active', '=', True), ('share', '=', False)], limit=1)
         user_data = [(fallback[0].login, fallback[0].partner_id.id)] if fallback else [('admin', False)]
+
+    # Seleccionar 2-3 IPs fijas para todos los registros del listado
+    todas_ips = IPS_OFICINA + IPS_MOVIL + IPS_REMOTO
+    ips_activas = random.sample(todas_ips, k=random.randint(2, 3))
 
     records = []
 
@@ -106,7 +109,6 @@ def _generate_demo_logs(env):
     end_day = now.date()
 
     while current_day <= end_day:
-        # Solo días laborables (0=lunes, 4=viernes)
         if current_day.weekday() <= 4:
             accesos_hoy = random.randint(2, 3)
             franjas_hoy = random.sample(FRANJAS, min(accesos_hoy, len(FRANJAS)))
@@ -122,8 +124,7 @@ def _generate_demo_logs(env):
                     continue
 
                 login, partner_id = random.choice(user_data)
-                # 90% desde oficina, 10% remoto
-                ip = random.choice(IPS_OFICINA + IPS_MOVIL if random.random() < 0.9 else IPS_REMOTO)
+                ip = random.choice(ips_activas)
                 result = 'success' if random.random() < 0.92 else 'failure'
 
                 records.append({
@@ -135,23 +136,6 @@ def _generate_demo_logs(env):
                 })
 
         current_day += timedelta(days=1)
-
-    # --- Intentos maliciosos aleatorios (bots, no respetan horario) ---
-    for _ in range(40):
-        days_back = random.randint(0, 90)
-        hour = random.randint(0, 23)
-        minute = random.randint(0, 59)
-        log_date = three_months_ago + timedelta(days=days_back, hours=hour, minutes=minute)
-        if log_date > now:
-            log_date = now - timedelta(minutes=random.randint(10, 120))
-
-        records.append({
-            'login': random.choice(LOGINS_INVALIDOS),
-            'partner_id': False,
-            'ip': random.choice(IPS_SOSPECHOSAS),
-            'result': 'failure',
-            'date': log_date,
-        })
 
     # Ordenar cronológicamente
     records.sort(key=lambda r: r['date'])
