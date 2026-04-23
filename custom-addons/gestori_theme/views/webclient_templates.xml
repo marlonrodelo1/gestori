@@ -1,231 +1,161 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!--
-        GESTORI THEME — Override del login page
-        Inyecta CSS inline para que la página luzca bien
-        aunque los bundles de Odoo no carguen en producción.
+        GESTORI THEME — Login page override
+        Inyecta CSS en el <head> del HTML vía t-set="head"
+        (método oficial de Odoo, más fiable que XPath sobre el body)
     -->
     <template id="gestori_login_layout" inherit_id="web.login_layout" name="Gestori Login Layout">
 
-        <!-- ── 1. Inyectar CSS inline antes del contenedor ── -->
-        <xpath expr="//div[hasclass('container')]" position="before">
-            <style>
-                /* ============================================================
-                   GESTORI — Login Page · Inline Styles
-                   Azul #0d0096 | Naranja #ff6000
-                   Funciona sin depender de los asset bundles de Odoo.
-                   ============================================================ */
+        <!-- Inyectar CSS en <head> justo después de t-set="no_footer" -->
+        <xpath expr="//t[@t-set='no_footer']" position="after">
+            <t t-set="head">
+                <style>
+                    /* ============================================================
+                       GESTORI — Login Page
+                       Azul #0d0096 | Naranja #ff6000
+                       ============================================================ */
 
-                /* Fondo y tipografía base */
-                html, body {
-                    height: 100%;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #f0f2f5 !important;
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-                                 'Helvetica Neue', Arial, sans-serif;
-                    font-size: 14px;
-                    color: #333333;
-                    -webkit-font-smoothing: antialiased;
-                }
+                    html, body {
+                        height: 100%;
+                        margin: 0;
+                        padding: 0;
+                        background-color: #f0f2f5 !important;
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+                                     Roboto, 'Helvetica Neue', Arial, sans-serif;
+                        font-size: 14px;
+                        color: #333;
+                        -webkit-font-smoothing: antialiased;
+                    }
 
-                /* Contenedor centrado verticalmente */
-                .container.py-5 {
-                    min-height: 100vh;
-                    display: flex !important;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 2rem 1rem !important;
-                    box-sizing: border-box;
-                }
+                    /* Centrar verticalmente */
+                    .container {
+                        min-height: 100vh;
+                        display: flex !important;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 2rem 1rem !important;
+                        box-sizing: border-box;
+                    }
 
-                /* Tarjeta principal */
-                .card.border-0.mx-auto,
-                .o_database_list {
-                    background-color: #ffffff !important;
-                    border: none !important;
-                    border-top: 4px solid #0d0096 !important;
-                    border-radius: 12px !important;
-                    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.10) !important;
-                    max-width: 380px !important;
-                    width: 100% !important;
-                    overflow: hidden;
-                }
+                    /* Tarjeta */
+                    .card {
+                        background-color: #ffffff !important;
+                        border: none !important;
+                        border-top: 4px solid #0d0096 !important;
+                        border-radius: 12px !important;
+                        box-shadow: 0 4px 24px rgba(0,0,0,0.10) !important;
+                        max-width: 380px !important;
+                        width: 100% !important;
+                        overflow: hidden;
+                    }
 
-                .card-body {
-                    padding: 2rem 2rem 1.5rem !important;
-                }
+                    .card-body {
+                        padding: 2rem !important;
+                    }
 
-                /* Logo */
-                .text-center.pb-3.border-bottom.mb-4 {
-                    padding-bottom: 1.5rem !important;
-                    margin-bottom: 1.5rem !important;
-                    border-bottom: 1px solid #e8eaed !important;
-                    text-align: center;
-                }
+                    /* Logo */
+                    .card .text-center img {
+                        max-height: 80px !important;
+                        max-width: 200px !important;
+                        width: auto;
+                    }
 
-                .text-center.pb-3.border-bottom.mb-4 img {
-                    max-height: 80px !important;
-                    max-width: 200px !important;
-                    width: auto;
-                }
+                    /* Labels */
+                    label, .form-label, .col-form-label {
+                        font-weight: 600;
+                        font-size: 13px;
+                        color: #555;
+                        margin-bottom: 4px;
+                        display: block;
+                    }
 
-                /* Labels */
-                label,
-                .form-label,
-                .col-form-label {
-                    font-weight: 600;
-                    font-size: 13px;
-                    color: #555555;
-                    margin-bottom: 5px;
-                    display: block;
-                }
+                    /* Inputs */
+                    input.form-control, .form-control {
+                        width: 100%;
+                        padding: 10px 13px;
+                        border: 1.5px solid #dde1e7 !important;
+                        border-radius: 8px !important;
+                        font-size: 14px;
+                        color: #333;
+                        background-color: #fafafa !important;
+                        box-sizing: border-box;
+                        outline: none;
+                        transition: border-color 0.2s, box-shadow 0.2s;
+                    }
 
-                /* Inputs */
-                input.form-control,
-                .form-control {
-                    width: 100%;
-                    padding: 10px 13px;
-                    border: 1.5px solid #dde1e7;
-                    border-radius: 8px;
-                    font-size: 14px;
-                    color: #333333;
-                    background-color: #fafafa;
-                    box-sizing: border-box;
-                    outline: none;
-                    transition: border-color 0.2s, box-shadow 0.2s;
-                    -webkit-appearance: none;
-                }
+                    input.form-control:focus, .form-control:focus {
+                        border-color: #0d0096 !important;
+                        background-color: #fff !important;
+                        box-shadow: 0 0 0 3px rgba(13,0,150,0.12) !important;
+                    }
 
-                input.form-control:focus,
-                .form-control:focus {
-                    border-color: #0d0096 !important;
-                    background-color: #ffffff !important;
-                    box-shadow: 0 0 0 3px rgba(13, 0, 150, 0.12) !important;
-                }
+                    .mb-3 { margin-bottom: 1rem !important; }
 
-                /* Espaciado de campos */
-                .mb-3 {
-                    margin-bottom: 1rem !important;
-                }
+                    /* Botón principal */
+                    .btn-primary {
+                        background-color: #0d0096 !important;
+                        border-color: #0d0096 !important;
+                        color: #fff !important;
+                        border-radius: 8px !important;
+                        font-weight: 600;
+                        font-size: 15px;
+                        padding: 11px 16px;
+                        width: 100%;
+                        transition: background-color 0.2s;
+                    }
 
-                /* Botón Iniciar sesión */
-                .btn-primary,
-                button[type="submit"],
-                input[type="submit"] {
-                    display: block;
-                    width: 100%;
-                    padding: 11px 16px;
-                    background-color: #0d0096 !important;
-                    border: none !important;
-                    border-radius: 8px !important;
-                    color: #ffffff !important;
-                    font-size: 15px;
-                    font-weight: 600;
-                    cursor: pointer;
-                    text-align: center;
-                    text-decoration: none;
-                    transition: background-color 0.2s;
-                    box-sizing: border-box;
-                    -webkit-appearance: none;
-                }
+                    .btn-primary:hover, .btn-primary:focus {
+                        background-color: #ff6000 !important;
+                        border-color: #ff6000 !important;
+                        color: #fff !important;
+                    }
 
-                .btn-primary:hover,
-                button[type="submit"]:hover,
-                input[type="submit"]:hover {
-                    background-color: #ff6000 !important;
-                    color: #ffffff !important;
-                }
+                    /* Links */
+                    a { color: #0d0096; text-decoration: none; }
+                    a:hover { color: #ff6000; }
 
-                .btn-primary:active,
-                button[type="submit"]:active {
-                    background-color: #cc4d00 !important;
-                }
+                    /* Alertas */
+                    .alert-danger {
+                        background: #fff5f5;
+                        border: 1px solid #ffcccc;
+                        border-radius: 8px;
+                        color: #c0392b;
+                        padding: 10px 14px;
+                        font-size: 13px;
+                        margin-top: 12px;
+                    }
 
-                /* Botones secundarios */
-                .btn-secondary,
-                .btn-link {
-                    background-color: transparent !important;
-                    color: #0d0096 !important;
-                    border: none;
-                    font-size: 13px;
-                    cursor: pointer;
-                    padding: 6px 0;
-                }
+                    .alert-success {
+                        background: #f0fff4;
+                        border: 1px solid #b7ebc8;
+                        border-radius: 8px;
+                        color: #1e7e34;
+                        padding: 10px 14px;
+                        font-size: 13px;
+                    }
 
-                .btn-link:hover { color: #ff6000 !important; }
+                    /* Footer de la tarjeta */
+                    .card .border-top {
+                        border-top: 1px solid #e8eaed !important;
+                        margin-top: 1.5rem !important;
+                        padding-top: 1rem !important;
+                        font-size: 12px;
+                        color: #999;
+                        text-align: center;
+                    }
 
-                /* Área de botones del form */
-                .oe_login_buttons,
-                .d-grid {
-                    margin-top: 1.25rem;
-                    display: block !important;
-                }
+                    /* Ocultar "Powered by Odoo" */
+                    a[href*="odoo.com"] { display: none !important; }
 
-                /* Links */
-                a {
-                    color: #0d0096;
-                    text-decoration: none;
-                }
-                a:hover { color: #ff6000; }
-
-                /* Mensaje de error */
-                .alert-danger {
-                    background-color: #fff5f5;
-                    border: 1px solid #ffcccc;
-                    border-radius: 8px;
-                    color: #c0392b;
-                    padding: 10px 14px;
-                    font-size: 13px;
-                    margin-top: 12px;
-                    margin-bottom: 0;
-                }
-
-                /* Mensaje de éxito */
-                .alert-success {
-                    background-color: #f0fff4;
-                    border: 1px solid #b7ebc8;
-                    border-radius: 8px;
-                    color: #1e7e34;
-                    padding: 10px 14px;
-                    font-size: 13px;
-                    margin-top: 12px;
-                }
-
-                /* Footer de la tarjeta */
-                .text-center.small.mt-4.pt-3.border-top {
-                    border-top: 1px solid #e8eaed !important;
-                    margin-top: 1.5rem !important;
-                    padding-top: 1rem !important;
-                    font-size: 12px;
-                    color: #999999;
-                    text-align: center;
-                }
-
-                /* Ocultar "Powered by Odoo" */
-                a[href*="odoo.com"] { display: none !important; }
-                span[class*="odoo"] { display: none !important; }
-
-                /* Separador entre links del footer */
-                .border-end { border-right: 1px solid #ccc !important; }
-
-                /* Input group (selector de DB) */
-                .input-group {
-                    display: flex;
-                    gap: 6px;
-                }
-                .input-group .form-control { flex: 1; }
-                .input-group .btn { flex-shrink: 0; width: auto; }
-
-                /* Responsive */
-                @media (max-width: 420px) {
-                    .card-body { padding: 1.5rem 1.25rem !important; }
-                    .card.border-0.mx-auto { margin: 0 0.5rem !important; }
-                }
-            </style>
+                    @media (max-width: 420px) {
+                        .card-body { padding: 1.5rem 1.25rem !important; }
+                    }
+                </style>
+            </t>
         </xpath>
 
-        <!-- ── 2. Eliminar "Powered by Odoo" del footer ── -->
+        <!-- Eliminar el link "Powered by Odoo" -->
         <xpath expr="//a[contains(@href,'odoo.com')]" position="replace"/>
 
     </template>
